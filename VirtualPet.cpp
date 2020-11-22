@@ -1,6 +1,5 @@
 #include <iostream>
-#include <chrono>
-#include <thread>
+#include <fstream>
 #include "windows.h"
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -235,14 +234,69 @@ private:
 			
 	}
 	
+	bool CheckForExistingFile()
+	{
+		std::ifstream ifile;
+		ifile.open("files/save_file.txt");
+		if (ifile)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	}
+
 	void CreateNewPet()
 	{
 		LoadingScreen("Checking for Existing File", 500);
+		if (CheckForExistingFile())
+		{
+			Print("There");
+			Print("would you like to overwrite save data?");
+			Print("                  y/n");
+			std::string userInput;
+
+			do {
+				std::cin >> userInput;
+				if (userInput == "y")
+				{
+					std::remove("files/save_file.txt");
+					std::ofstream saveFile("files/save_file.txt");
+					break;
+				}
+				else if (userInput == "n")
+				{
+					Print("No");
+					break;
+				}
+				else
+				{
+					Print("ERROR!!!! Please enter a (lowercase) 'y' or 'n'");
+				}
+			} while (true);
+		}
+		else
+		{
+			Print("GONE GONE");
+			std::ofstream saveFile("files/save_file.txt");
+		}
+
 	}
 
+	
 	void LoadExistingPet()
 	{
-
+		if (CheckForExistingFile())
+		{
+			LoadingScreen("Opening save", 500);
+		}
+		else
+		{
+			Print("There is no existing Pet");
+		}
 	}
 
 	void Description()
