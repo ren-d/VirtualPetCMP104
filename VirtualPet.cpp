@@ -98,7 +98,7 @@ public:
 class UserInterface
 {
 public:
-
+	bool menuState = true;
 	UserInterface()
 	{
 		Initialize();
@@ -106,7 +106,7 @@ public:
 private:
 	void Initialize()
 	{
-		LoadingScreen(500);
+		LoadingScreen("Loading", 500);
 		MenuScreen();
 
 
@@ -148,24 +148,24 @@ private:
 
 
 
-	void LoadingScreen(int speedMS)
+	void LoadingScreen(std::string word, int speedMS)
 	{
 		for (int i = 0; i < 2; i++)
 		{
 			LargeGap();
-			std::cout << "                                                    Loading                                                        " << std::endl;
+			std::cout << "                                                    " << word << "                                                        " << std::endl;
 			LargeGap();
 			WaitAndRefresh(speedMS);
 			LargeGap();
-			std::cout << "                                                    Loading.                                                       " << std::endl;
+			std::cout << "                                                    " << word << ".                                                       " << std::endl;
 			LargeGap();
 			WaitAndRefresh(speedMS);
 			LargeGap();
-			std::cout << "                                                    Loading. .                                                     " << std::endl;
+			std::cout << "                                                    " << word << ". .                                                     " << std::endl;
 			LargeGap();
 			WaitAndRefresh(speedMS);
 			LargeGap();
-			std::cout << "                                                    Loading. . .                                                   " << std::endl;
+			std::cout << "                                                    " << word << ". . .                                                   " << std::endl;
 			LargeGap();
 			WaitAndRefresh(speedMS);
 		}
@@ -174,33 +174,86 @@ private:
 
 	void MenuScreen()
 	{
-		nl();
-		nl();      
-		SetConsoleTextAttribute(hConsole, 10);
-		Print("                         __      __  _          _                     _   _____           _   ");
-		Print("                         \\ \\    / / (_)        | |                   | | |  __ \\         | |  ");
-		Print("                          \\ \\  / /   _   _ __  | |_   _   _    __ _  | | | |__) |   ___  | |_ ");
-		Print("                           \\ \\/ /   | | | '__| | __| | | | |  / _` | | | |  ___/   / _ \\ | __|");
-		Print("                            \\  /    | | | |    | |_  | |_| | | (_| | | | | |      |  __/ | |_ ");
-		Print("                             \\/     |_| |_|     \\__|  \\__,_|  \\__,_| |_| |_|       \\___|  \\__|");
-		SetConsoleTextAttribute(hConsole, 14);
-		ln();
-		nl();
-		SetConsoleTextAttribute(hConsole, 15);
-		Print("                           # 0 # Create New Pet                      # 1 # Load Existing Pet");
-		nl();
-		Print("                           # 2 # Description                         # 3 # Exit Program");
-		SetConsoleTextAttribute(hConsole, 14);
-		nl();
-		ln();
-		nl();
-		nl();
+		while (menuState)
+		{
+			nl();
+			nl();
+			SetConsoleTextAttribute(hConsole, 10);
+			Print("                         __      __  _          _                     _   _____           _   ");
+			Print("                         \\ \\    / / (_)        | |                   | | |  __ \\         | |  ");
+			Print("                          \\ \\  / /   _   _ __  | |_   _   _    __ _  | | | |__) |   ___  | |_ ");
+			Print("                           \\ \\/ /   | | | '__| | __| | | | |  / _` | | | |  ___/   / _ \\ | __|");
+			Print("                            \\  /    | | | |    | |_  | |_| | | (_| | | | | |      |  __/ | |_ ");
+			Print("                             \\/     |_| |_|     \\__|  \\__,_|  \\__,_| |_| |_|       \\___|  \\__|");
+			SetConsoleTextAttribute(hConsole, 14);
+			ln();
+			nl();
+			SetConsoleTextAttribute(hConsole, 15);
+			Print("                           # 0 # Create New Pet                      # 1 # Load Existing Pet");
+			nl();
+			Print("                           # 2 # Description                         # 3 # Exit Program");
+			SetConsoleTextAttribute(hConsole, 14);
+			nl();
+			ln();
+			nl();
+			nl();
+			Selection();
+			WaitAndRefresh(1000);
+		}
+		
 
 	}
 
-
+	void Selection()
+	{
+		int menuSelection;
+		if (std::cin >> menuSelection)
+		{
+			switch (menuSelection)
+			{
+			case 0:
+				CreateNewPet();
+				break;
+			case 1:
+				LoadExistingPet();
+				break;
+			case 2:
+				Description();
+				break;
+			case 3:
+				ExitProgram();
+				break;
+			default:
+				Print("Error input is invalid. Please enter a value from 0-3");
+				break;
+			}
+		}
+		else
+		{
+			Print("Error input is invalid. Please enter a value from 0-3");
+		}
+			
+	}
 	
+	void CreateNewPet()
+	{
+		LoadingScreen("Checking for Existing File", 500);
+	}
 
+	void LoadExistingPet()
+	{
+
+	}
+
+	void Description()
+	{
+
+	}
+
+	void ExitProgram()
+	{
+		exit(0);
+	}
 
 	
 	
