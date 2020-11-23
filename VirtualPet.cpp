@@ -4,6 +4,7 @@
 #include <string>
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 void ConvertAsciiFileToArray(std::string Array[], std::string filename);
+void PrintPet(std::string pet[]);
 
 class VirtualPet
 {
@@ -11,12 +12,8 @@ class VirtualPet
 private:
 	std::string
 		m_Name,
-		m_Type,
-		m_asciiDog[10],
-		m_asciiCat[10],
-		m_asciiBird[10],
-		m_asciiFrog[10],
-		m_asciiFish[10];
+		m_Type;
+		
 	int
 		m_Hunger,
 		m_Energy,
@@ -28,6 +25,12 @@ private:
 
 
 public:
+	std::string
+		asciiDog[10],
+		asciiCat[10],
+		asciiBird[10],
+		asciiFrog[10],
+		asciiFish[10];
 
 	VirtualPet()
 	{
@@ -42,11 +45,11 @@ public:
 
 		m_isAlive = true;
 
-		ConvertAsciiFileToArray(m_asciiDog, "files/ascii/asciiDog.txt");
-		ConvertAsciiFileToArray(m_asciiCat, "files/ascii/asciiCat.txt");
-		ConvertAsciiFileToArray(m_asciiBird, "files/ascii/asciiBird.txt");
-		ConvertAsciiFileToArray(m_asciiFrog, "files/ascii/asciiFrog.txt");
-		ConvertAsciiFileToArray(m_asciiFish, "files/ascii/asciiFish.txt");
+		ConvertAsciiFileToArray(asciiDog, "files/ascii/asciiDog.txt");
+		ConvertAsciiFileToArray(asciiCat, "files/ascii/asciiCat.txt");
+		ConvertAsciiFileToArray(asciiBird, "files/ascii/asciiBird.txt");
+		ConvertAsciiFileToArray(asciiFrog, "files/ascii/asciiFrog.txt");
+		ConvertAsciiFileToArray(asciiFish, "files/ascii/asciiFish.txt");
 
 	}
 
@@ -71,6 +74,7 @@ public:
 			m_Type = "Fish";
 			break;
 		}
+		std::cout << m_Type << std::endl;
 	}
 
 	void SetName(char* name)
@@ -117,18 +121,85 @@ public:
 		Initialize();
 	}
 
-	void PetCreation()
+	int PetCreation(std::string pet1[10], std::string pet2[10], std::string pet3[10], std::string pet4[10], std::string pet5[10])
 	{
+		int currentSelection = 0;
+		int userInput = 0;
 		WaitAndRefresh(0);
-		nl();
-		nl();
-		ln();
-		Print("                                         Select a Pet Type");
-		nl();
-		nl();
-		ln();
+		
+		
+		do {
+			Header();
+			ln();
+			Print("                                                 Select a Pet Type");
+			nl();
+			nl();
+			SetConsoleTextAttribute(hConsole, 15);
+			switch (currentSelection)
+			{
+			case 0:
+				PrintPet(pet1);
+
+				break;
+			case 1:
+				PrintPet(pet2);
+				break;
+			case 2:
+				PrintPet(pet3);
+				break;
+			case 3:
+				PrintPet(pet4);
+				break;
+			case 4:
+				PrintPet(pet5);
+				break;
+			}
+			PetSelectionArrows(currentSelection);
+			nl();
+			nl();
+			SetConsoleTextAttribute(hConsole, 14);
+			Print("                                           Type '-1' to confirm selection.");
+			
+			ln();
+			
+			
+			if (std::cin >> userInput)
+			{
+				switch (userInput)
+				{
+				case 1:
+					if (currentSelection != 0)
+					{
+						currentSelection--;
+					}
+
+					break;
+				case 2:
+					if (currentSelection != 4)
+					{
+						currentSelection++;
+					}
+					break;
+				case -1:
+					userInput = -1;
+					break;
+				}
+			}
+			else
+			{
+				Print("Please Enter either '1' or '2'");
+				std::cin.clear();
+				std::cin.ignore(10000, '\n');
+			}
+			
+			WaitAndRefresh(500);
+		} while (userInput != -1);
+		return currentSelection;
 
 	}
+
+
+
 
 private:
 	void Initialize()
@@ -176,7 +247,30 @@ private:
 	{
 		Print("    ______________________________________________________________________________________________________________    ");
 	}
+	void Header()
+	{
+		SetConsoleTextAttribute(hConsole, 12);
+		Print("VirtualPet.cpp  v1.0                                                                                     Duncan Rendall");
+		nl();
+		SetConsoleTextAttribute(hConsole, 14);
 
+	}
+	void PetSelectionArrows(int selectionValue)
+	{
+		SetConsoleTextAttribute(hConsole, 12);
+		switch (selectionValue)
+		{
+		case 0:
+			std::cout << "                                                              " << " ------> 2" << std::endl;
+			break;
+		case 4:
+			std::cout << "                                          1 <------           " << std::endl;
+			break;
+		default:
+			std::cout << "                                          1 <------           " << " ------> 2" << std::endl;
+			break;
+		}
+	}
 
 	//Fake Loading screen
 	void LoadingScreen(std::string word, int speedMS)
@@ -208,8 +302,7 @@ private:
 	{
 		while (menuState)
 		{
-			nl();
-			nl();
+			Header();
 			SetConsoleTextAttribute(hConsole, 10);
 			Print("                         __      __  _          _                     _   _____           _   ");
 			Print("                         \\ \\    / / (_)        | |                   | | |  __ \\         | |  ");
@@ -323,7 +416,6 @@ private:
 			std::ofstream saveFile("files/save_file.txt");
 			menuState = false;
 		}
-		Print("test");
 
 	}
 
@@ -365,6 +457,7 @@ int main()
 	switch (ui.createPet)
 	{
 	case true:
+		pet.SetType(ui.PetCreation(pet.asciiDog, pet.asciiCat, pet.asciiBird, pet.asciiFrog, pet.asciiFish));
 		break;
 	case false:
 		break;
@@ -385,4 +478,14 @@ void ConvertAsciiFileToArray(std::string petArray[], std::string filename)
 		petArray[i] = line;
 	}
 
+}
+
+
+void PrintPet(std::string pet[10])
+{
+
+	for (int i = 0; i < 10; i++)
+	{
+		std::cout << pet[i] << std::endl;
+	}
 }
