@@ -1,24 +1,29 @@
 #include <iostream>
 #include <fstream>
 #include "windows.h"
-
+#include <string>
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+void ConvertAsciiFileToArray(std::string Array[], std::string filename);
 
 class VirtualPet
 {
 
 private:
-
 	std::string
 		m_Name,
-		m_Type;
-	int 
+		m_Type,
+		m_asciiDog[10],
+		m_asciiCat[10],
+		m_asciiBird[10],
+		m_asciiFrog[10],
+		m_asciiFish[10];
+	int
 		m_Hunger,
 		m_Energy,
-		m_Playfulness;	
+		m_Playfulness;
 	float
 		m_Age;
-	bool 
+	bool
 		m_isAlive;
 
 
@@ -36,6 +41,13 @@ public:
 		m_Playfulness = 4;
 
 		m_isAlive = true;
+
+		ConvertAsciiFileToArray(m_asciiDog, "files/ascii/asciiDog.txt");
+		ConvertAsciiFileToArray(m_asciiCat, "files/ascii/asciiCat.txt");
+		ConvertAsciiFileToArray(m_asciiBird, "files/ascii/asciiBird.txt");
+		ConvertAsciiFileToArray(m_asciiFrog, "files/ascii/asciiFrog.txt");
+		ConvertAsciiFileToArray(m_asciiFish, "files/ascii/asciiFish.txt");
+
 	}
 
 	void SetType(int type)
@@ -91,17 +103,33 @@ public:
 		return m_isAlive;
 	}
 
-	
+
 };
 
+//All user Interface code
 class UserInterface
 {
 public:
-	bool menuState = true;
-	UserInterface()
+	bool menuState = true;  //When program is in the menu state all code paths will return to the menu once it is at a dead end.
+	bool createPet = true;
+	UserInterface() //when the user interface object is initialized it will run this function
 	{
 		Initialize();
 	}
+
+	void PetCreation()
+	{
+		WaitAndRefresh(0);
+		nl();
+		nl();
+		ln();
+		Print("                                         Select a Pet Type");
+		nl();
+		nl();
+		ln();
+
+	}
+
 private:
 	void Initialize()
 	{
@@ -111,12 +139,15 @@ private:
 
 	}
 
+	//waits for a specified amount of time then clears the console screen.
 	void WaitAndRefresh(int waitTimeMS)
 	{
 		Sleep(waitTimeMS);
 		system("CLS");
 	}
 
+
+	//makes writing std::cout statements quicker and easier to write
 	void Print(std::string string)
 	{
 		std::cout << string << std::endl;
@@ -127,6 +158,7 @@ private:
 		Print("");
 	}
 
+	//creates a large gap (makes formatting UI easier)
 	void LargeGap()
 	{
 		nl();
@@ -146,7 +178,7 @@ private:
 	}
 
 
-
+	//Fake Loading screen
 	void LoadingScreen(std::string word, int speedMS)
 	{
 		for (int i = 0; i < 2; i++)
@@ -168,9 +200,10 @@ private:
 			LargeGap();
 			WaitAndRefresh(speedMS);
 		}
-		
+
 	}
 
+	//Shows the main menu screen.
 	void MenuScreen()
 	{
 		while (menuState)
@@ -196,14 +229,15 @@ private:
 			ln();
 			nl();
 			nl();
-			Selection();
+			MainMenuSelection();
 			WaitAndRefresh(1000);
 		}
-		
+
 
 	}
 
-	void Selection()
+	//The selection for the main menu.
+	void MainMenuSelection()
 	{
 		int menuSelection;
 		if (std::cin >> menuSelection)
@@ -212,9 +246,11 @@ private:
 			{
 			case 0:
 				CreateNewPet();
+				createPet = true;
 				break;
 			case 1:
 				LoadExistingPet();
+				createPet = false;
 				break;
 			case 2:
 				Description();
@@ -231,9 +267,10 @@ private:
 		{
 			Print("Error input is invalid. Please enter a value from 0-3");
 		}
-			
+
 	}
-	
+
+	//checks code for an existing file.
 	bool CheckForExistingFile()
 	{
 		std::ifstream ifile;
@@ -249,6 +286,7 @@ private:
 
 	}
 
+	//code path for the create a new pet option in the menu
 	void CreateNewPet()
 	{
 		LoadingScreen("Checking for Existing File", 500);
@@ -265,6 +303,7 @@ private:
 				{
 					std::remove("files/save_file.txt");
 					std::ofstream saveFile("files/save_file.txt");
+					menuState = false;
 					break;
 				}
 				else if (userInput == "n")
@@ -282,11 +321,13 @@ private:
 		{
 			Print("GONE GONE");
 			std::ofstream saveFile("files/save_file.txt");
+			menuState = false;
 		}
+		Print("test");
 
 	}
 
-	
+	//code path for loading an already created pet.
 	void LoadExistingPet()
 	{
 		if (CheckForExistingFile())
@@ -299,18 +340,21 @@ private:
 		}
 	}
 
+	//shows the description of the program.
 	void Description()
 	{
 
 	}
 
+
+	//Exits the Program
 	void ExitProgram()
 	{
 		exit(0);
 	}
 
-	
-	
+
+
 
 };
 
@@ -318,11 +362,27 @@ int main()
 {
 	VirtualPet pet;
 	UserInterface ui;
-	int userInput;
-	std::cin >> userInput;
-	pet.SetType(userInput);
-
+	switch (ui.createPet)
+	{
+	case true:
+		break;
+	case false:
+		break;
+	}
 	
 	
 	return 1;
+}
+
+void ConvertAsciiFileToArray(std::string petArray[], std::string filename)
+{
+	std::string line;
+	std::ifstream myFile;
+	myFile.open(filename);
+	for (int i = 0; i < 10; i++)
+	{
+		std::getline(myFile, line);
+		petArray[i] = line;
+	}
+
 }
