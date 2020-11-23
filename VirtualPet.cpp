@@ -53,6 +53,10 @@ public:
 
 	}
 
+	void CreateSaveFile()
+	{
+		//creates save file for the pet
+	}
 	void SetType(int type)
 	{
 
