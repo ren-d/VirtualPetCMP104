@@ -107,6 +107,10 @@ public:
 	{
 		return m_isAlive;
 	}
+	std::string GetName()
+	{
+		return m_Name;
+	}
 
 
 };
@@ -254,7 +258,7 @@ public:
 						switch (happy)
 						{
 						case 'n':
-							std::fill_n(name, 8, '_');
+							std::fill_n(name, 9, '_');
 							break;
 						case 'y':
 							Print("Hell yeah");
@@ -278,6 +282,48 @@ public:
 		return userInput;
 	}
 
+	void ConfirmPet(VirtualPet pet)
+	{
+		LoadingScreen("Loading Your VirtualPet", 500);
+		Header();
+		ln();
+		nl();
+		nl();
+		Print("                                          Are you happy with your Virtual Pet?");
+		nl();
+		SetConsoleTextAttribute(hConsole, 15);
+		if (pet.GetType() == "Dog")
+		{
+			PrintPet(pet.asciiDog);
+		}
+		else if (pet.GetType() == "Cat")
+		{
+			PrintPet(pet.asciiCat);
+		}
+		else if (pet.GetType() == "Bird")
+		{
+			PrintPet(pet.asciiBird);
+		}
+		else if (pet.GetType() == "Frog")
+		{
+			PrintPet(pet.asciiDog);
+		}
+		else if (pet.GetType() == "Fish")
+		{
+			PrintPet(pet.asciiFish);
+		}
+		nl();
+		SetConsoleTextAttribute(hConsole, 12);
+		std::cout << "                                    Name: ";
+		SetConsoleTextAttribute(hConsole, 15);
+		std::cout << pet.GetName() << std::endl;
+		SetConsoleTextAttribute(hConsole, 14);
+		nl();
+		ln();
+		int cool;
+		std::cin >> cool;
+
+	}
 
 
 
@@ -539,6 +585,7 @@ int main()
 	case true:
 		pet.SetType(ui.PetCreation(pet.asciiDog, pet.asciiCat, pet.asciiBird, pet.asciiFrog, pet.asciiFish));
 		pet.SetName(ui.NameCreation());
+		ui.ConfirmPet(pet);
 		break;
 	case false:
 		break;
