@@ -77,9 +77,10 @@ public:
 		std::cout << m_Type << std::endl;
 	}
 
-	void SetName(char* name)
+	void SetName(std::string name)
 	{
 		m_Name = name;
+		std::cout << name << std::endl;
 	}
 
 	int GetHunger()
@@ -196,6 +197,85 @@ public:
 		} while (userInput != -1);
 		return currentSelection;
 
+	}
+
+	std::string NameCreation()
+	{
+		char name[9] = { '_','_','_','_','_', '_', '_', '_' }; 
+		std::string userInput;
+		char happy = 0;
+		do {
+			Header();
+			ln();
+			Print("                                              Create a name for your Virtual Pet");
+			nl();
+			nl();
+			nl();
+			nl();
+			std::cout << "                                                       " << name[0] << "  " << name[1] << "  " << name[2] << "  " << name[3] << "  " << name[4] << "  " << name[5] << "  " << name[6] << "  " << name[7] << " " << name[8] << std::endl;
+			nl();
+			nl();
+			nl();
+			Print("                                                        Enter your new friend's name!");
+			Print("          Or enter '0' to use the default name");
+			ln();
+			SetConsoleTextAttribute(hConsole, 15);
+			std::getline(std::cin >> std::ws, userInput);
+			if (userInput == "0")
+			{
+				userInput = "your pet";
+			}
+			if (userInput.length() > 8)
+			{
+				Print("Name is too Long, please enter a name with at most, '8 characters'");
+			}
+			else
+			{
+				
+				strcpy_s(name, userInput.c_str());
+				do
+				{
+					WaitAndRefresh(400);
+					Header();
+					ln();
+					Print("                                              Create a name for your Virtual Pet");
+					nl();
+					nl();
+					nl();
+					nl();
+					std::cout << "                                                       " << name[0] << "  " << name[1] << "  " << name[2] << "  " << name[3] << "  " << name[4] << "  " << name[5] << "  " << name[6] << "  " << name[7] << std::endl;
+					nl();
+					nl();
+					nl();
+					Print("                                             Are you happy with your pet's name? y/n");
+					ln();
+					if (std::cin >> happy)
+					{
+						switch (happy)
+						{
+						case 'n':
+							std::fill_n(name, 8, '_');
+							break;
+						case 'y':
+							Print("Hell yeah");
+							WaitAndRefresh(400);
+							break;
+						default:
+							break;
+						}
+					}
+					else
+					{
+						Print("Please enter either 'y' or 'n'");
+						std::cin.clear();
+						std::cin.ignore(10000, '\n');
+					}
+				} while (happy != 'y' && happy != 'n');
+			}
+			WaitAndRefresh(500);
+		} while (happy != 'y');
+		
+		return userInput;
 	}
 
 
@@ -458,6 +538,7 @@ int main()
 	{
 	case true:
 		pet.SetType(ui.PetCreation(pet.asciiDog, pet.asciiCat, pet.asciiBird, pet.asciiFrog, pet.asciiFish));
+		pet.SetName(ui.NameCreation());
 		break;
 	case false:
 		break;
