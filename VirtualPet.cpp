@@ -4,7 +4,7 @@
 #include <string>
 #include <chrono>
 #include <ctime>
-
+#include <conio.h>
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 void ConvertAsciiFileToArray(std::string Array[], std::string filename);
@@ -20,10 +20,12 @@ private:
 		m_Name,
 		m_Type;
 		
-	int
+	
+	float
 		m_Hunger,
 		m_Energy,
-		m_Playfulness;
+		m_Playfulness,
+		m_Happiness;
 	float
 		m_Age;
 	bool
@@ -43,12 +45,12 @@ public:
 		m_Name = "null";
 		m_Type = "null";
 
-		m_Age = 0.0;
+		m_Age = 0.0f;
 
-		m_Hunger = 4;
-		m_Energy = 4;
-		m_Playfulness = 4;
-
+		m_Hunger = 4.0f;
+		m_Energy = 4.0f;
+		m_Playfulness = 0.0f;
+		m_Happiness = m_Hunger + m_Energy + m_Playfulness / 3;
 		m_isAlive = true;
 
 		ConvertAsciiFileToArray(asciiDog, "files/ascii/asciiDog.txt");
@@ -107,19 +109,24 @@ public:
 		std::cout << name << std::endl;
 	}
 
-	int GetHunger()
+	float GetHunger()
 	{
 		return m_Hunger;
 	}
 
-	int GetEnergy()
+	float GetEnergy()
 	{
 		return m_Energy;
 	}
 
-	int GetPlayfulness()
+	float GetPlayfulness()
 	{
 		return m_Playfulness;
+	}
+	
+	float GetHappiness()
+	{
+		return m_Happiness;
 	}
 
 	std::string GetType()
@@ -136,6 +143,51 @@ public:
 		return m_Name;
 	}
 
+	void Feed()
+	{
+		if (m_Hunger < 3.5)
+		{
+			m_Hunger += 0.5f;
+			std::cout << m_Name << " ate some yum yums" << std::endl;
+		}
+		else
+		{
+			std::cout << m_Name << " is not Hungry right now." << std::endl;
+		}
+	}
+
+	void Play()
+	{
+		if (m_Energy >= 2.0 && m_Playfulness < 4.0)
+		{
+			m_Energy -= 0.3f;
+			m_Playfulness += 0.4f;
+			std::cout << m_Name << " did the fun" << std::endl;
+		}
+		else if (m_Energy < 2.5)
+		{
+			std::cout << m_Name << " is too Tired to play right now." << std::endl;
+		}
+		else if (m_Playfulness >= 4.0)
+		{
+			std::cout << m_Name << " has had enough of your silly games for now." << std::endl;
+		}
+	}
+
+	void Sleep()
+	{
+		if (m_Energy < 2.5)
+		{
+			m_Energy = 4.0f;
+			m_Hunger -= 3.0f;
+			m_Playfulness -= 3.0f;
+			std::cout << m_Name << " went to the sleep" << std::endl;
+		}
+		else
+		{
+			std::cout << m_Name << " is not tired right now.";
+		}
+	}
 
 };
 
@@ -152,38 +204,153 @@ public:
 
 	void VirtualPetMain(VirtualPet pet)
 	{
-		Header();
-		ln();
-		nl();
-		Print("                   Current Mood: Happy                                            Hunger: Full  ");
-		Print("                   Energy: Wide Awake                                          Playfulness: Excited  ");
-		nl();
-		ln();
-		nl();
-		Print("          Press 'f' to feed pet                                                      Press 'p' to play with pet");
-		if (pet.GetType() == "Dog")
-		{
-			PrintPet(pet.asciiDog, true);
-		}
-		else if (pet.GetType() == "Cat")
-		{
-			PrintPet(pet.asciiCat, true);
-		}
-		else if (pet.GetType() == "Bird")
-		{
-			PrintPet(pet.asciiBird, true);
-		}
-		else if (pet.GetType() == "Frog")
-		{
-			PrintPet(pet.asciiFrog, true);
-		}
-		else if (pet.GetType() == "Fish")
-		{
-			PrintPet(pet.asciiFish, true);
-		}
-		Print("          Press 's' to sleep                                                      Press 'e' to exit ");
-		nl();
-		ln();
+		bool exit = false;
+		do {
+			Header();
+			ln();
+			nl();
+			std::cout << "                   Current Mood: "; 
+			if(pet.GetHappiness() > 3.5)
+			{
+				std::cout << "Very Happy";
+			}
+			else if (pet.GetHappiness() <= 0)
+			{
+				std::cout << "DEAD";
+			}
+			else if (pet.GetHappiness() > 2.7)
+			{
+				std::cout << "Happy";
+			}
+			else if (pet.GetHappiness() > 2.5)
+			{
+				std::cout << "Fine";
+			}
+			else if (pet.GetHappiness() > 2.0)
+			{
+				std::cout << "Unhappy";
+			}
+			else if (pet.GetHappiness() > 1.5)
+			{
+				std::cout << "Sad";
+			}
+			else if (pet.GetHappiness() > 1.0)
+			{
+				std::cout << "Very Sad";
+			}
+			else if (pet.GetHappiness() < 1.0)
+			{
+				std::cout << "Distraught";
+			}
+			std::cout << "                                       Hunger: ";
+			if (pet.GetHunger() >= 4.0)
+			{
+				std::cout << "Well Fed" << std::endl;
+			}
+			else if (pet.GetHunger() >= 3.0)
+			{
+				std::cout << "Slightly Peckish" << std::endl;
+			}
+			else if (pet.GetHunger() >= 2.0)
+			{
+				std::cout << "Rather Hungry" << std::endl;
+			}
+			else if (pet.GetHunger() < 2.0)
+			{
+				std::cout << "Starving" << std::endl;
+			}
+			
+			std::cout << "                   Energy: ";
+			if (pet.GetEnergy() >= 4.0)
+			{
+				std::cout << "Wide Awake";
+			}
+			else if (pet.GetEnergy() <= 0)
+			{
+				std::cout << "Collapsed";
+			}
+			else if (pet.GetEnergy() >= 3.0)
+			{
+				std::cout << "Awake";
+			}
+			else if (pet.GetEnergy() >= 2.0)
+			{
+				std::cout << "Tired";
+			}
+			else if (pet.GetEnergy() < 2.0)
+			{
+				std::cout << "Falling Asleep";
+			}
+			std::cout << "                                          Playfulness: ";
+			if (pet.GetPlayfulness() == 0)
+			{
+				std::cout << "Excited" << std::endl;
+			}
+			else if (pet.GetPlayfulness() <= 1)
+			{
+				std::cout << "Very Playful" << std::endl;
+			}
+			else if (pet.GetPlayfulness() <= 2)
+			{
+				std::cout << "Playful" << std::endl;
+			}
+			else if (pet.GetPlayfulness() <= 3)
+			{
+				std::cout << "Satisfied" << std::endl;
+			}
+			else if (pet.GetPlayfulness() <= 4)
+			{
+				std::cout << "Bored" << std::endl;
+			}
+			nl();
+			ln();
+			nl();
+			Print("          Press 'f' to feed pet                                                      Press 'p' to play with pet");
+			if (pet.GetType() == "Dog")
+			{
+				PrintPet(pet.asciiDog, true);
+			}
+			else if (pet.GetType() == "Cat")
+			{
+				PrintPet(pet.asciiCat, true);
+			}
+			else if (pet.GetType() == "Bird")
+			{
+				PrintPet(pet.asciiBird, true);
+			}
+			else if (pet.GetType() == "Frog")
+			{
+				PrintPet(pet.asciiFrog, true);
+			}
+			else if (pet.GetType() == "Fish")
+			{
+				PrintPet(pet.asciiFish, true);
+			}
+			Print("          Press 's' to sleep                                                      Press 'e' to exit ");
+			nl();
+			ln();
+			char test;
+			std::cin >> test;
+			switch (test)
+			{
+			case 'f':
+				pet.Feed();
+				break;
+			case 'p':
+				pet.Play();
+				break;
+			case 's':
+				pet.Sleep();
+				break;
+			case 'e':
+				exit = true;
+				break;
+			default:
+				break;
+			}
+			WaitAndRefresh(800);
+		} while (exit == false);
+		
 	}
 
 
