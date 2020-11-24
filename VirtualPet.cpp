@@ -6,11 +6,13 @@
 #include <ctime>
 #include <conio.h>
 #include <thread>
+#include <sstream>
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 void ConvertAsciiFileToArray(std::string Array[], std::string filename);
 void PrintPet(std::string pet[], bool removeName);
 
+bool PetActive;
 
 
 class VirtualPet
@@ -62,7 +64,7 @@ public:
 
 	}
 
-	int CreateSaveFile()
+	int SaveProgress()
 	{
 		std::time_t end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		//creates save file for the pet
@@ -79,6 +81,7 @@ public:
 		return 0;
 
 	}
+
 	
 	void SetType(int type)
 	{
@@ -215,6 +218,7 @@ public:
 		bool exit = false;
 		do {
 			Header();
+			std::cout << pet.GetName() << std::endl;
 			ln();
 			nl();
 			std::cout << "                   Current Mood: "; 
@@ -608,6 +612,25 @@ public:
 		}
 
 	}
+	//code path for loading an already created pet.
+	void LoadExistingPet(VirtualPet& pet)
+	{
+		if (CheckForExistingFile())
+		{
+			LoadingScreen("Opening save", 500);
+			int poo;
+			std::ifstream savefile("files/save_file.txt");
+			std::string line;
+			while (std::getline(savefile, line))
+			{
+				pet.SetName(line);
+			}
+		}
+		else
+		{
+			Print("There is no existing Pet");
+		}
+	}
 
 
 private:
@@ -728,8 +751,8 @@ private:
 				createPet = true;
 				break;
 			case 1:
-				LoadExistingPet();
 				createPet = false;
+				menuState = false;
 				break;
 			case 2:
 				Description();
@@ -805,19 +828,7 @@ private:
 
 	}
 
-	//code path for loading an already created pet.
-	void LoadExistingPet()
-	{
-		if (CheckForExistingFile())
-		{
-			LoadingScreen("Opening save", 500);
-		}
-		else
-		{
-			Print("There is no existing Pet");
-		}
-	}
-
+	
 	//shows the description of the program.
 	void Description()
 	{
@@ -838,7 +849,7 @@ private:
 
 void Update(VirtualPet &pet, UserInterface ui)
 {
-	while (true)
+	while (PetActive)
 	{
 		pet.ReduceStatus(0.2 * 0.15, 0.2 * 0.1, 0.2 * 0.1);
 		std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -857,14 +868,22 @@ int main()
 		if (ui.ConfirmPet(pet))
 		{
 			ui.LoadingScreen("Creating New Pet save file", 500);
-			pet.CreateSaveFile();
+			pet.SaveProgress();
+			PetActive = true;
 			std::thread threadObj(Update, std::ref(pet), ui);
 			ui.VirtualPetMain(pet);
 			threadObj.detach();
 		}
+		ui.LoadingScreen("Saving Progress", 500);
+		pet.SaveProgress();
 		std::cout << "exit" << std::endl;
 		break;
 	case false:
+		ui.LoadExistingPet(pet);
+		PetActive = true;
+		std::thread threadObj(Update, std::ref(pet), ui);
+		ui.VirtualPetMain(pet);
+		threadObj.detach();
 		break;
 	}
 	
