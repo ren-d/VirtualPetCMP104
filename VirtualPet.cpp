@@ -5,6 +5,7 @@
 #include <chrono>
 #include <ctime>
 #include <conio.h>
+#include <thread>
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 void ConvertAsciiFileToArray(std::string Array[], std::string filename);
@@ -143,9 +144,16 @@ public:
 		return m_Name;
 	}
 
+	void ReduceStatus(float Hunger, float Energy, float Playfulness)
+	{
+		m_Hunger -= Hunger;
+		m_Energy -= Energy;
+		m_Playfulness -= Playfulness;
+	}
+
 	void Feed()
 	{
-		if (m_Hunger < 3.5)
+		if (m_Hunger < 4.0)
 		{
 			m_Hunger += 0.5f;
 			std::cout << m_Name << " ate some yum yums" << std::endl;
@@ -160,7 +168,7 @@ public:
 	{
 		if (m_Energy >= 2.0 && m_Playfulness < 4.0)
 		{
-			m_Energy -= 0.3f;
+			m_Energy -= 0.1f;
 			m_Playfulness += 0.4f;
 			std::cout << m_Name << " did the fun" << std::endl;
 		}
@@ -179,7 +187,7 @@ public:
 		if (m_Energy < 2.5)
 		{
 			m_Energy = 4.0f;
-			m_Hunger -= 3.0f;
+			m_Hunger -= 2.0f;
 			m_Playfulness -= 3.0f;
 			std::cout << m_Name << " went to the sleep" << std::endl;
 		}
@@ -202,7 +210,7 @@ public:
 		Initialize();
 	}
 
-	void VirtualPetMain(VirtualPet pet)
+	void VirtualPetMain(VirtualPet& pet)
 	{
 		bool exit = false;
 		do {
@@ -284,15 +292,15 @@ public:
 			std::cout << "                                          Playfulness: ";
 			if (pet.GetPlayfulness() == 0)
 			{
-				std::cout << "Excited" << std::endl;
+				std::cout << "Bored" << std::endl;
 			}
 			else if (pet.GetPlayfulness() <= 1)
 			{
-				std::cout << "Very Playful" << std::endl;
+				std::cout << "PlayFul" << std::endl;
 			}
 			else if (pet.GetPlayfulness() <= 2)
 			{
-				std::cout << "Playful" << std::endl;
+				std::cout << "Very Playful" << std::endl;
 			}
 			else if (pet.GetPlayfulness() <= 3)
 			{
@@ -300,7 +308,7 @@ public:
 			}
 			else if (pet.GetPlayfulness() <= 4)
 			{
-				std::cout << "Bored" << std::endl;
+				std::cout << "Fed up" << std::endl;
 			}
 			nl();
 			ln();
@@ -510,7 +518,7 @@ public:
 		return userInput;
 	}
 
-	bool ConfirmPet(VirtualPet& pet)
+	bool ConfirmPet(VirtualPet &pet)
 	{
 
 		char userInput;
@@ -828,7 +836,14 @@ private:
 
 };
 
-
+void Update(VirtualPet &pet, UserInterface ui)
+{
+	while (true)
+	{
+		pet.ReduceStatus(0.2 * 0.15, 0.2 * 0.1, 0.2 * 0.1);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+}
 
 int main()
 {
@@ -843,7 +858,9 @@ int main()
 		{
 			ui.LoadingScreen("Creating New Pet save file", 500);
 			pet.CreateSaveFile();
+			std::thread threadObj(Update, std::ref(pet), ui);
 			ui.VirtualPetMain(pet);
+			threadObj.detach();
 		}
 		std::cout << "exit" << std::endl;
 		break;
