@@ -8,7 +8,7 @@
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 void ConvertAsciiFileToArray(std::string Array[], std::string filename);
-void PrintPet(std::string pet[]);
+void PrintPet(std::string pet[], bool removeName);
 
 
 
@@ -61,8 +61,7 @@ public:
 
 	int CreateSaveFile()
 	{
-		auto start = std::chrono::system_clock::now();
-		std::time_t end_time = std::chrono::system_clock::to_time_t(start);
+		std::time_t end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		//creates save file for the pet
 		std::ofstream saveFile;
 		saveFile.open("files/save_file.txt");
@@ -151,6 +150,43 @@ public:
 		Initialize();
 	}
 
+	void VirtualPetMain(VirtualPet pet)
+	{
+		Header();
+		ln();
+		nl();
+		Print("                   Current Mood: Happy                                            Hunger: Full  ");
+		Print("                   Energy: Wide Awake                                          Playfulness: Excited  ");
+		nl();
+		ln();
+		nl();
+		Print("          Press 'f' to feed pet                                                      Press 'p' to play with pet");
+		if (pet.GetType() == "Dog")
+		{
+			PrintPet(pet.asciiDog, true);
+		}
+		else if (pet.GetType() == "Cat")
+		{
+			PrintPet(pet.asciiCat, true);
+		}
+		else if (pet.GetType() == "Bird")
+		{
+			PrintPet(pet.asciiBird, true);
+		}
+		else if (pet.GetType() == "Frog")
+		{
+			PrintPet(pet.asciiFrog, true);
+		}
+		else if (pet.GetType() == "Fish")
+		{
+			PrintPet(pet.asciiFish, true);
+		}
+		Print("          Press 's' to sleep                                                      Press 'e' to exit ");
+		nl();
+		ln();
+	}
+
+
 	int PetCreation(std::string pet1[10], std::string pet2[10], std::string pet3[10], std::string pet4[10], std::string pet5[10])
 	{
 		int currentSelection = 0;
@@ -168,20 +204,20 @@ public:
 			switch (currentSelection)
 			{
 			case 0:
-				PrintPet(pet1);
+				PrintPet(pet1, false);
 
 				break;
 			case 1:
-				PrintPet(pet2);
+				PrintPet(pet2, false);
 				break;
 			case 2:
-				PrintPet(pet3);
+				PrintPet(pet3, false);
 				break;
 			case 3:
-				PrintPet(pet4);
+				PrintPet(pet4, false);
 				break;
 			case 4:
-				PrintPet(pet5);
+				PrintPet(pet5, false);
 				break;
 			}
 			PetSelectionArrows(currentSelection);
@@ -321,23 +357,23 @@ public:
 			SetConsoleTextAttribute(hConsole, 15);
 			if (pet.GetType() == "Dog")
 			{
-				PrintPet(pet.asciiDog);
+				PrintPet(pet.asciiDog, true);
 			}
 			else if (pet.GetType() == "Cat")
 			{
-				PrintPet(pet.asciiCat);
+				PrintPet(pet.asciiCat, true);
 			}
 			else if (pet.GetType() == "Bird")
 			{
-				PrintPet(pet.asciiBird);
+				PrintPet(pet.asciiBird, true);
 			}
 			else if (pet.GetType() == "Frog")
 			{
-				PrintPet(pet.asciiDog);
+				PrintPet(pet.asciiFrog, true);
 			}
 			else if (pet.GetType() == "Fish")
 			{
-				PrintPet(pet.asciiFish);
+				PrintPet(pet.asciiFish, true);
 			}
 			nl();
 			SetConsoleTextAttribute(hConsole, 12);
@@ -640,6 +676,7 @@ int main()
 		{
 			ui.LoadingScreen("Creating New Pet save file", 500);
 			pet.CreateSaveFile();
+			ui.VirtualPetMain(pet);
 		}
 		std::cout << "exit" << std::endl;
 		break;
@@ -665,11 +702,21 @@ void ConvertAsciiFileToArray(std::string petArray[], std::string filename)
 }
 
 
-void PrintPet(std::string pet[10])
+void PrintPet(std::string pet[10], bool removeName)
 {
-
-	for (int i = 0; i < 10; i++)
+	if (removeName)
 	{
-		std::cout << pet[i] << std::endl;
+		for (int i = 1; i < 10; i++)
+		{
+			std::cout << pet[i] << std::endl;
+		}
 	}
+	else
+	{
+		for (int i = 0; i < 10; i++)
+		{
+			std::cout << pet[i] << std::endl;
+		}
+	}
+	
 }
