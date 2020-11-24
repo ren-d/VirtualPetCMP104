@@ -2,9 +2,15 @@
 #include <fstream>
 #include "windows.h"
 #include <string>
+#include <chrono>
+#include <ctime>
+
+
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 void ConvertAsciiFileToArray(std::string Array[], std::string filename);
 void PrintPet(std::string pet[]);
+
+
 
 class VirtualPet
 {
@@ -53,10 +59,25 @@ public:
 
 	}
 
-	void CreateSaveFile()
+	int CreateSaveFile()
 	{
+		auto start = std::chrono::system_clock::now();
+		std::time_t end_time = std::chrono::system_clock::to_time_t(start);
 		//creates save file for the pet
+		std::ofstream saveFile;
+		saveFile.open("files/save_file.txt");
+		saveFile << m_Name << std::endl;
+		saveFile << m_Type << std::endl;
+		saveFile << m_Age << std::endl;
+		saveFile << m_Hunger << std::endl;
+		saveFile << m_Energy << std::endl;
+		saveFile << m_Playfulness << std::endl;
+		saveFile << m_isAlive << std::endl;
+		saveFile <<  std::ctime(&end_time) << std::endl;
+		return 0;
+
 	}
+	
 	void SetType(int type)
 	{
 
@@ -286,49 +307,96 @@ public:
 		return userInput;
 	}
 
-	void ConfirmPet(VirtualPet pet)
+	bool ConfirmPet(VirtualPet& pet)
 	{
-		LoadingScreen("Loading Your VirtualPet", 500);
-		Header();
-		ln();
-		nl();
-		nl();
-		Print("                                          Are you happy with your Virtual Pet?");
-		nl();
-		SetConsoleTextAttribute(hConsole, 15);
-		if (pet.GetType() == "Dog")
-		{
-			PrintPet(pet.asciiDog);
-		}
-		else if (pet.GetType() == "Cat")
-		{
-			PrintPet(pet.asciiCat);
-		}
-		else if (pet.GetType() == "Bird")
-		{
-			PrintPet(pet.asciiBird);
-		}
-		else if (pet.GetType() == "Frog")
-		{
-			PrintPet(pet.asciiDog);
-		}
-		else if (pet.GetType() == "Fish")
-		{
-			PrintPet(pet.asciiFish);
-		}
-		nl();
-		SetConsoleTextAttribute(hConsole, 12);
-		std::cout << "                                    Name: ";
-		SetConsoleTextAttribute(hConsole, 15);
-		std::cout << pet.GetName() << std::endl;
-		SetConsoleTextAttribute(hConsole, 14);
-		nl();
-		ln();
-		int cool;
-		std::cin >> cool;
+
+		char userInput;
+		do {
+			Header();
+			ln();
+			nl();
+			nl();
+			Print("                                          Are you happy with your Virtual Pet?   y/n");
+			nl();
+			SetConsoleTextAttribute(hConsole, 15);
+			if (pet.GetType() == "Dog")
+			{
+				PrintPet(pet.asciiDog);
+			}
+			else if (pet.GetType() == "Cat")
+			{
+				PrintPet(pet.asciiCat);
+			}
+			else if (pet.GetType() == "Bird")
+			{
+				PrintPet(pet.asciiBird);
+			}
+			else if (pet.GetType() == "Frog")
+			{
+				PrintPet(pet.asciiDog);
+			}
+			else if (pet.GetType() == "Fish")
+			{
+				PrintPet(pet.asciiFish);
+			}
+			nl();
+			SetConsoleTextAttribute(hConsole, 12);
+			std::cout << "                                    Name: ";
+			SetConsoleTextAttribute(hConsole, 15);
+			std::cout << pet.GetName() << std::endl;
+			SetConsoleTextAttribute(hConsole, 14);
+			nl();
+			ln();
+			if (std::cin >> userInput)
+			{
+				switch (userInput)
+				{
+				case 'y':
+					return true;
+					break;
+				case 'n':
+					return false;
+					break;
+				default:
+					break;
+				}
+			}
+			else
+			{
+				Print("Please enter either 'y' or 'n'");
+				std::cin.clear();
+				std::cin.ignore(10000, '\n');
+			}
+			WaitAndRefresh(500);
+		} while (userInput != 'y' && userInput != 'n');
+		
 
 	}
 
+	//Fake Loading screen
+	void LoadingScreen(std::string word, int speedMS)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			LargeGap();
+			std::cout << "                                                    " << word << "                                                        " << std::endl;
+			LargeGap();
+			WaitAndRefresh(speedMS);
+			LargeGap();
+			std::cout << "                                                    " << word << ".                                                       " << std::endl;
+			LargeGap();
+			WaitAndRefresh(speedMS);
+			LargeGap();
+			std::cout << "                                                    " << word << ". .                                                     " << std::endl;
+			LargeGap();
+			WaitAndRefresh(speedMS);
+			LargeGap();
+			std::cout << "                                                    " << word << ". . .                                                   " << std::endl;
+			LargeGap();
+			WaitAndRefresh(speedMS);
+		}
+
+	}
 
 
 private:
@@ -402,30 +470,7 @@ private:
 		}
 	}
 
-	//Fake Loading screen
-	void LoadingScreen(std::string word, int speedMS)
-	{
-		for (int i = 0; i < 2; i++)
-		{
-			LargeGap();
-			std::cout << "                                                    " << word << "                                                        " << std::endl;
-			LargeGap();
-			WaitAndRefresh(speedMS);
-			LargeGap();
-			std::cout << "                                                    " << word << ".                                                       " << std::endl;
-			LargeGap();
-			WaitAndRefresh(speedMS);
-			LargeGap();
-			std::cout << "                                                    " << word << ". .                                                     " << std::endl;
-			LargeGap();
-			WaitAndRefresh(speedMS);
-			LargeGap();
-			std::cout << "                                                    " << word << ". . .                                                   " << std::endl;
-			LargeGap();
-			WaitAndRefresh(speedMS);
-		}
-
-	}
+	
 
 	//Shows the main menu screen.
 	void MenuScreen()
@@ -580,6 +625,8 @@ private:
 
 };
 
+
+
 int main()
 {
 	VirtualPet pet;
@@ -589,7 +636,12 @@ int main()
 	case true:
 		pet.SetType(ui.PetCreation(pet.asciiDog, pet.asciiCat, pet.asciiBird, pet.asciiFrog, pet.asciiFish));
 		pet.SetName(ui.NameCreation());
-		ui.ConfirmPet(pet);
+		if (ui.ConfirmPet(pet))
+		{
+			ui.LoadingScreen("Creating New Pet save file", 500);
+			pet.CreateSaveFile();
+		}
+		std::cout << "exit" << std::endl;
 		break;
 	case false:
 		break;
