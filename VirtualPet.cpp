@@ -29,8 +29,6 @@ private:
 		m_Energy,
 		m_Playfulness,
 		m_Happiness;
-	float
-		m_Age;
 	bool
 		m_isAlive;
 
@@ -48,7 +46,6 @@ public:
 		m_Name = "null";
 		m_Type = "null";
 
-		m_Age = 0.0f;
 
 		m_Hunger = 4.0f;
 		m_Energy = 4.0f;
@@ -72,7 +69,6 @@ public:
 		saveFile.open("files/save_file.txt");
 		saveFile << m_Name << std::endl;
 		saveFile << m_Type << std::endl;
-		saveFile << m_Age << std::endl;
 		saveFile << m_Hunger << std::endl;
 		saveFile << m_Energy << std::endl;
 		saveFile << m_Playfulness << std::endl;
@@ -147,6 +143,22 @@ public:
 		return m_Name;
 	}
 
+
+	void SetHunger(float value)
+	{
+		m_Hunger = value;
+	}
+
+	void SetEnergy(float value)
+	{
+		m_Energy = value;
+	}
+
+	void SetPlayfulness(float value)
+	{
+		m_Playfulness = value;
+	}
+
 	void ReduceStatus(float Hunger, float Energy, float Playfulness)
 	{
 		m_Hunger -= Hunger;
@@ -179,7 +191,7 @@ public:
 		{
 			std::cout << m_Name << " is too Tired to play right now." << std::endl;
 		}
-		else if (m_Playfulness >= 4.0)
+		else if (m_Playfulness >= 3.2)
 		{
 			std::cout << m_Name << " has had enough of your silly games for now." << std::endl;
 		}
@@ -206,11 +218,11 @@ public:
 class UserInterface
 {
 public:
-	bool menuState = true;  //When program is in the menu state all code paths will return to the menu once it is at a dead end.
+	bool menuState;  //When program is in the menu state all code paths will return to the menu once it is at a dead end.
 	bool createPet = true;
 	UserInterface() //when the user interface object is initialized it will run this function
 	{
-		Initialize();
+		menuState = true;
 	}
 
 	void VirtualPetMain(VirtualPet& pet)
@@ -218,7 +230,6 @@ public:
 		bool exit = false;
 		do {
 			Header();
-			std::cout << pet.GetName() << std::endl;
 			ln();
 			nl();
 			std::cout << "                   Current Mood: "; 
@@ -618,13 +629,54 @@ public:
 		if (CheckForExistingFile())
 		{
 			LoadingScreen("Opening save", 500);
-			int poo;
+			int i = 0;
 			std::ifstream savefile("files/save_file.txt");
 			std::string line;
 			while (std::getline(savefile, line))
 			{
-				pet.SetName(line);
+				if (i == 0)
+				{
+					pet.SetName(line);
+				}
+				else if (i == 1)
+				{
+					if (line == "Dog")
+					{
+						pet.SetType(0);
+					}
+					if (line == "Cat")
+					{
+						pet.SetType(1);
+					}
+					if (line == "Bird")
+					{
+						pet.SetType(2);
+					}
+					if (line == "Frog")
+					{
+						pet.SetType(3);
+					}
+					if (line == "Fish")
+					{
+						pet.SetType(4);
+					}
+					
+				}
+				else if (i == 2)
+				{
+					pet.SetHunger(std::stof(line));
+				}
+				else if (i == 3)
+				{
+					pet.SetEnergy(std::stof(line));
+				}
+				else if (i == 4)
+				{
+					pet.SetPlayfulness(std::stof(line));
+				}
+				i++;
 			}
+			
 		}
 		else
 		{
@@ -632,16 +684,12 @@ public:
 		}
 	}
 
-
-private:
 	void Initialize()
 	{
 		LoadingScreen("Loading", 500);
 		MenuScreen();
-
-
 	}
-
+private:
 	//waits for a specified amount of time then clears the console screen.
 	void WaitAndRefresh(int waitTimeMS)
 	{
@@ -860,32 +908,39 @@ int main()
 {
 	VirtualPet pet;
 	UserInterface ui;
-	switch (ui.createPet)
-	{
-	case true:
-		pet.SetType(ui.PetCreation(pet.asciiDog, pet.asciiCat, pet.asciiBird, pet.asciiFrog, pet.asciiFish));
-		pet.SetName(ui.NameCreation());
-		if (ui.ConfirmPet(pet))
+	do {
+		ui.Initialize();
+		switch (ui.createPet)
 		{
-			ui.LoadingScreen("Creating New Pet save file", 500);
+		case true:
+			pet.SetType(ui.PetCreation(pet.asciiDog, pet.asciiCat, pet.asciiBird, pet.asciiFrog, pet.asciiFish));
+			pet.SetName(ui.NameCreation());
+			if (ui.ConfirmPet(pet))
+			{
+				ui.LoadingScreen("Creating New Pet save file", 500);
+				pet.SaveProgress();
+				PetActive = true;
+				std::thread threadObj(Update, std::ref(pet), ui);
+				ui.VirtualPetMain(pet);
+				threadObj.detach();
+			}
+			ui.LoadingScreen("Saving Progress", 500);
 			pet.SaveProgress();
+			ui.menuState = true;
+			break;
+		case false:
+			ui.LoadExistingPet(pet);
 			PetActive = true;
 			std::thread threadObj(Update, std::ref(pet), ui);
 			ui.VirtualPetMain(pet);
+			ui.LoadingScreen("Saving Progress", 500);
+			pet.SaveProgress();
 			threadObj.detach();
+			ui.menuState = true;
+			break;
 		}
-		ui.LoadingScreen("Saving Progress", 500);
-		pet.SaveProgress();
-		std::cout << "exit" << std::endl;
-		break;
-	case false:
-		ui.LoadExistingPet(pet);
-		PetActive = true;
-		std::thread threadObj(Update, std::ref(pet), ui);
-		ui.VirtualPetMain(pet);
-		threadObj.detach();
-		break;
-	}
+	} while (ui.menuState == true);
+	
 	
 	
 	return 1;
