@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "windows.h"
+#include <windows.h>
 #include <string>
 #include <chrono>
 #include <ctime>
@@ -50,7 +50,7 @@ public:
 		m_Hunger = 4.0f;
 		m_Energy = 4.0f;
 		m_Playfulness = 0.0f;
-		m_Happiness = m_Hunger + m_Energy + m_Playfulness / 3;
+		m_Happiness = (m_Hunger + m_Energy + m_Playfulness) / 3;
 		m_isAlive = true;
 
 		ConvertAsciiFileToArray(asciiDog, "files/ascii/asciiDog.txt");
@@ -100,13 +100,16 @@ public:
 			m_Type = "Fish";
 			break;
 		}
-		std::cout << m_Type << std::endl;
+	}
+
+	void UpdateHapiness()
+	{
+		m_Happiness = (m_Hunger + m_Energy + m_Playfulness) / 3;
 	}
 
 	void SetName(std::string name)
 	{
 		m_Name = name;
-		std::cout << name << std::endl;
 	}
 
 	float GetHunger()
@@ -181,7 +184,7 @@ public:
 
 	void Play()
 	{
-		if (m_Energy >= 2.0 && m_Playfulness < 4.0)
+		if (m_Energy >= 2.0 && m_Playfulness < 3.2)
 		{
 			m_Energy -= 0.1f;
 			m_Playfulness += 0.4f;
@@ -232,103 +235,140 @@ public:
 			Header();
 			ln();
 			nl();
+			SetConsoleTextAttribute(hConsole, 15);
 			std::cout << "                   Current Mood: "; 
 			if(pet.GetHappiness() > 3.5)
 			{
+				SetConsoleTextAttribute(hConsole, 10);
 				std::cout << "Very Happy";
 			}
 			else if (pet.GetHappiness() <= 0)
 			{
+				SetConsoleTextAttribute(hConsole, 4);
 				std::cout << "DEAD";
 			}
 			else if (pet.GetHappiness() > 2.7)
 			{
+				SetConsoleTextAttribute(hConsole, 11);
 				std::cout << "Happy";
 			}
 			else if (pet.GetHappiness() > 2.5)
 			{
+				SetConsoleTextAttribute(hConsole, 14);
 				std::cout << "Fine";
 			}
 			else if (pet.GetHappiness() > 2.0)
 			{
+				SetConsoleTextAttribute(hConsole, 13);
 				std::cout << "Unhappy";
 			}
 			else if (pet.GetHappiness() > 1.5)
 			{
+				SetConsoleTextAttribute(hConsole, 9);
 				std::cout << "Sad";
 			}
 			else if (pet.GetHappiness() > 1.0)
 			{
+				SetConsoleTextAttribute(hConsole, 3);
 				std::cout << "Very Sad";
 			}
 			else if (pet.GetHappiness() < 1.0)
 			{
+				SetConsoleTextAttribute(hConsole, 4);
 				std::cout << "Distraught";
 			}
+			SetConsoleTextAttribute(hConsole, 15);
 			std::cout << "                                       Hunger: ";
 			if (pet.GetHunger() >= 4.0)
 			{
+				SetConsoleTextAttribute(hConsole, 10);
 				std::cout << "Well Fed" << std::endl;
 			}
 			else if (pet.GetHunger() >= 3.0)
 			{
+				SetConsoleTextAttribute(hConsole, 11);
 				std::cout << "Slightly Peckish" << std::endl;
 			}
 			else if (pet.GetHunger() >= 2.0)
 			{
+				SetConsoleTextAttribute(hConsole, 14);
 				std::cout << "Rather Hungry" << std::endl;
 			}
 			else if (pet.GetHunger() < 2.0)
 			{
+				SetConsoleTextAttribute(hConsole, 12);
 				std::cout << "Starving" << std::endl;
 			}
-			
+			SetConsoleTextAttribute(hConsole, 15);
 			std::cout << "                   Energy: ";
 			if (pet.GetEnergy() >= 4.0)
 			{
+				SetConsoleTextAttribute(hConsole, 10);
 				std::cout << "Wide Awake";
 			}
 			else if (pet.GetEnergy() <= 0)
 			{
+				SetConsoleTextAttribute(hConsole, 12);
 				std::cout << "Collapsed";
 			}
 			else if (pet.GetEnergy() >= 3.0)
 			{
+				SetConsoleTextAttribute(hConsole, 11);
 				std::cout << "Awake";
 			}
 			else if (pet.GetEnergy() >= 2.0)
 			{
+				SetConsoleTextAttribute(hConsole, 14);
 				std::cout << "Tired";
 			}
 			else if (pet.GetEnergy() < 2.0)
 			{
+				SetConsoleTextAttribute(hConsole, 6);
 				std::cout << "Falling Asleep";
 			}
-			std::cout << "                                          Playfulness: ";
+			SetConsoleTextAttribute(hConsole, 15);
+			std::cout << "                                       Playfulness: ";
 			if (pet.GetPlayfulness() == 0)
 			{
+				SetConsoleTextAttribute(hConsole, 12);
 				std::cout << "Bored" << std::endl;
 			}
 			else if (pet.GetPlayfulness() <= 1)
 			{
+				SetConsoleTextAttribute(hConsole, 14);
 				std::cout << "PlayFul" << std::endl;
 			}
 			else if (pet.GetPlayfulness() <= 2)
 			{
+				SetConsoleTextAttribute(hConsole, 11);
 				std::cout << "Very Playful" << std::endl;
 			}
 			else if (pet.GetPlayfulness() <= 3)
 			{
+				SetConsoleTextAttribute(hConsole, 10);
 				std::cout << "Satisfied" << std::endl;
 			}
-			else if (pet.GetPlayfulness() <= 4)
+			else if (pet.GetPlayfulness() <= 5)
 			{
+				SetConsoleTextAttribute(hConsole, 2);
 				std::cout << "Fed up" << std::endl;
 			}
+			SetConsoleTextAttribute(hConsole, 14);
 			nl();
 			ln();
 			nl();
-			Print("          Press 'f' to feed pet                                                      Press 'p' to play with pet");
+			std::cout << "          Press "; 
+			SetConsoleTextAttribute(hConsole, 15);
+			std::cout << "'f'";
+			SetConsoleTextAttribute(hConsole, 14);
+			std::cout << " to feed pet                                                      Press ";
+			SetConsoleTextAttribute(hConsole, 15);
+			std::cout << "'p'";
+			SetConsoleTextAttribute(hConsole, 14);
+			std::cout << " to play with pet" << std::endl;
+			SetConsoleTextAttribute(hConsole, 12);
+			std::cout << "                                                       " << pet.GetName() << std::endl;
+			SetConsoleTextAttribute(hConsole, 15);
 			if (pet.GetType() == "Dog")
 			{
 				PrintPet(pet.asciiDog, true);
@@ -349,10 +389,20 @@ public:
 			{
 				PrintPet(pet.asciiFish, true);
 			}
-			Print("          Press 's' to sleep                                                      Press 'e' to exit ");
+			SetConsoleTextAttribute(hConsole, 14);
+			std::cout <<  "          Press "; 
+			SetConsoleTextAttribute(hConsole, 15);
+			std::cout << "'s'";
+			SetConsoleTextAttribute(hConsole, 14);
+			std::cout << " to sleep                                                      Press ";
+			SetConsoleTextAttribute(hConsole, 15);
+			std::cout << "'e'";
+			SetConsoleTextAttribute(hConsole, 14);
+			std::cout << " to exit " << std::endl;
 			nl();
 			ln();
 			char test;
+			SetConsoleTextAttribute(hConsole, 15);
 			std::cin >> test;
 			switch (test)
 			{
@@ -367,10 +417,12 @@ public:
 				break;
 			case 'e':
 				exit = true;
+				PetActive = false;
 				break;
 			default:
 				break;
 			}
+			SetConsoleTextAttribute(hConsole, 14);
 			WaitAndRefresh(800);
 		} while (exit == false);
 		
@@ -624,7 +676,7 @@ public:
 
 	}
 	//code path for loading an already created pet.
-	void LoadExistingPet(VirtualPet& pet)
+	bool LoadExistingPet(VirtualPet& pet)
 	{
 		if (CheckForExistingFile())
 		{
@@ -676,11 +728,13 @@ public:
 				}
 				i++;
 			}
+			return true;
 			
 		}
 		else
 		{
 			Print("There is no existing Pet");
+			return false;
 		}
 	}
 
@@ -900,6 +954,7 @@ void Update(VirtualPet &pet, UserInterface ui)
 	while (PetActive)
 	{
 		pet.ReduceStatus(0.2 * 0.15, 0.2 * 0.1, 0.2 * 0.1);
+		pet.UpdateHapiness();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 }
@@ -920,23 +975,33 @@ int main()
 				ui.LoadingScreen("Creating New Pet save file", 500);
 				pet.SaveProgress();
 				PetActive = true;
-				std::thread threadObj(Update, std::ref(pet), ui);
+				ui.menuState = false;
+				std::thread thread(Update, std::ref(pet), ui);
 				ui.VirtualPetMain(pet);
-				threadObj.detach();
+				thread.detach();
 			}
 			ui.LoadingScreen("Saving Progress", 500);
 			pet.SaveProgress();
 			ui.menuState = true;
 			break;
 		case false:
-			ui.LoadExistingPet(pet);
-			PetActive = true;
-			std::thread threadObj(Update, std::ref(pet), ui);
-			ui.VirtualPetMain(pet);
-			ui.LoadingScreen("Saving Progress", 500);
-			pet.SaveProgress();
-			threadObj.detach();
-			ui.menuState = true;
+			if (ui.LoadExistingPet(pet))
+			{
+				PetActive = true;
+				ui.menuState = false;
+				std::thread thread(Update, std::ref(pet), ui);
+				ui.VirtualPetMain(pet);
+				ui.LoadingScreen("Saving Progress", 500);
+				pet.SaveProgress();
+				thread.detach();
+				ui.menuState = true;
+			}
+			else 
+			{
+				ui.menuState = true;
+			}
+			
+			
 			break;
 		}
 	} while (ui.menuState == true);
