@@ -139,7 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CyberPet.cpp" />
+    <ClCompile Include="MiscFunctions.cpp" />
+    <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="VirtualPet.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MiscFunctions.h" />
+    <ClInclude Include="UserInterface.h" />
+    <ClInclude Include="VirtualPet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
