@@ -5,11 +5,14 @@ HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 //All user Interface code
 
-UserInterface::UserInterface() //when the user interface object is initialized it will run this function
+UserInterface::UserInterface() //constructor intializes variables
 {
 	menuState = true;
+	createPet = true;
+	PetActive = false;
 }
 
+//displays the main VirtualPet screen, and allows user to input actions
 void UserInterface::VirtualPetMain(VirtualPet& pet)
 {
 	bool exit = false;
@@ -19,7 +22,7 @@ void UserInterface::VirtualPetMain(VirtualPet& pet)
 		nl();
 		SetConsoleTextAttribute(hConsole, 15);
 		std::cout << "                   Current Mood: ";
-		if (pet.GetHappiness() > 3.5)
+		if (pet.GetHappiness() >= 3.7)
 		{
 			SetConsoleTextAttribute(hConsole, 10);
 			std::cout << "Very Happy";
@@ -27,24 +30,25 @@ void UserInterface::VirtualPetMain(VirtualPet& pet)
 		else if (pet.GetHappiness() <= 0)
 		{
 			SetConsoleTextAttribute(hConsole, 4);
-			std::cout << "DEAD";
+			pet.Die();
+			exit = true;
 		}
-		else if (pet.GetHappiness() > 2.7)
+		else if (pet.GetHappiness() >= 3.5)
 		{
 			SetConsoleTextAttribute(hConsole, 11);
 			std::cout << "Happy";
 		}
-		else if (pet.GetHappiness() > 2.5)
+		else if (pet.GetHappiness() >= 2.5)
 		{
 			SetConsoleTextAttribute(hConsole, 14);
 			std::cout << "Fine";
 		}
-		else if (pet.GetHappiness() > 2.0)
+		else if (pet.GetHappiness() >= 2.0)
 		{
 			SetConsoleTextAttribute(hConsole, 13);
 			std::cout << "Unhappy";
 		}
-		else if (pet.GetHappiness() > 1.5)
+		else if (pet.GetHappiness() >= 1.5)
 		{
 			SetConsoleTextAttribute(hConsole, 9);
 			std::cout << "Sad";
@@ -92,6 +96,7 @@ void UserInterface::VirtualPetMain(VirtualPet& pet)
 		{
 			SetConsoleTextAttribute(hConsole, 12);
 			std::cout << "Collapsed";
+			pet.Sleep();
 		}
 		else if (pet.GetEnergy() >= 3.0)
 		{
@@ -118,12 +123,12 @@ void UserInterface::VirtualPetMain(VirtualPet& pet)
 		else if (pet.GetPlayfulness() <= 1)
 		{
 			SetConsoleTextAttribute(hConsole, 14);
-			std::cout << "PlayFul" << std::endl;
+			std::cout << "Needs Attention" << std::endl;
 		}
 		else if (pet.GetPlayfulness() <= 2)
 		{
 			SetConsoleTextAttribute(hConsole, 11);
-			std::cout << "Very Playful" << std::endl;
+			std::cout << "Amused" << std::endl;
 		}
 		else if (pet.GetPlayfulness() <= 3)
 		{
@@ -181,43 +186,55 @@ void UserInterface::VirtualPetMain(VirtualPet& pet)
 		std::cout << "'e'";
 		SetConsoleTextAttribute(hConsole, 14);
 		std::cout << " to exit " << std::endl;
+		SetConsoleTextAttribute(hConsole, 14);
+		std::cout << "                                           Press ";
+		SetConsoleTextAttribute(hConsole, 15);
+		std::cout << "'u'";
+		SetConsoleTextAttribute(hConsole, 14);
+		std::cout << " to update status" << std::endl;
 		nl();
 		ln();
 		char test;
 		SetConsoleTextAttribute(hConsole, 15);
 		std::cin >> test;
-		switch (test)
+		if (!exit)
 		{
-		case 'f':
-			pet.Feed();
-			break;
-		case 'p':
-			pet.Play();
-			break;
-		case 's':
-			pet.Sleep();
-			break;
-		case 'e':
-			exit = true;
-			PetActive = false;
-			break;
-		default:
-			break;
+			switch (test)
+			{
+			case 'f':
+				pet.Feed();
+				break;
+			case 'p':
+				pet.Play();
+				break;
+			case 's':
+				pet.Sleep();
+				break;
+			case 'e':
+				exit = true;
+				PetActive = false;
+				break;
+			case 'u':
+				break;
+			default:
+				break;
+			}
 		}
+		
 		SetConsoleTextAttribute(hConsole, 14);
 		WaitAndRefresh(800);
 	} while (exit == false);
 
 }
 
-
+//UI for the pet creation screen, the array parameters would be the ascii art.
 int UserInterface::PetCreation(std::string pet1[10], std::string pet2[10], std::string pet3[10], std::string pet4[10], std::string pet5[10])
 {
 	int currentSelection = 0;
 	int userInput = 0;
 	WaitAndRefresh(0);
 
-
+	//selection screen
 	do {
 		Header();
 		ln();
@@ -288,9 +305,12 @@ int UserInterface::PetCreation(std::string pet1[10], std::string pet2[10], std::
 
 }
 
+//UI for the pet's name creator
 std::string UserInterface::NameCreation()
 {
+	//displays these values on screen
 	char name[9] = { '_','_','_','_','_', '_', '_', '_' };
+
 	std::string userInput;
 	char happy = 0;
 	do {
@@ -367,6 +387,7 @@ std::string UserInterface::NameCreation()
 	return userInput;
 }
 
+//confirm if user is happy with their choice of pet and returns a bool to start the VirtualPet
 bool UserInterface::ConfirmPet(VirtualPet& pet)
 {
 
@@ -457,7 +478,8 @@ void UserInterface::LoadingScreen(std::string word, int speedMS)
 	}
 
 }
-//code path for loading an already created pet.
+
+//code path for loading an already created pet from file.
 bool UserInterface::LoadExistingPet(VirtualPet& pet)
 {
 	if (CheckForExistingFile())
@@ -520,6 +542,7 @@ bool UserInterface::LoadExistingPet(VirtualPet& pet)
 	}
 }
 
+//initialises the main menu
 void UserInterface::Initialize()
 {
 	LoadingScreen("Loading", 500);
@@ -540,6 +563,7 @@ void UserInterface::Print(std::string string)
 	std::cout << string << std::endl;
 }
 
+//short hand for developers to make new lines take less time to create
 void UserInterface::nl()
 {
 	Print("");
@@ -559,10 +583,13 @@ void UserInterface::LargeGap()
 	nl();
 }
 
+//short hand for developers to add lines for the UI
 void UserInterface::ln()
 {
 	Print("    ______________________________________________________________________________________________________________    ");
 }
+
+//header to be used at the top of each UI screen
 void UserInterface::Header()
 {
 	SetConsoleTextAttribute(hConsole, 12);
@@ -571,6 +598,8 @@ void UserInterface::Header()
 	SetConsoleTextAttribute(hConsole, 14);
 
 }
+
+//arrows for the pet selection screen.
 void UserInterface::PetSelectionArrows(int selectionValue)
 {
 	SetConsoleTextAttribute(hConsole, 12);
@@ -678,9 +707,19 @@ void UserInterface::CreateNewPet()
 	LoadingScreen("Checking for Existing File", 500);
 	if (CheckForExistingFile())
 	{
-		Print("There");
-		Print("would you like to overwrite save data?");
-		Print("                  y/n");
+		Header();
+		ln();
+		nl();
+		nl();
+		SetConsoleTextAttribute(hConsole, 15);
+		Print("                                               A pet already exists!");
+		SetConsoleTextAttribute(hConsole, 14);
+		nl();
+		Print("                                      would you like to overwrite save data?");
+		Print("                                                        y/n");
+		nl();
+		nl();
+		ln();
 		std::string userInput;
 
 		do {
@@ -694,7 +733,6 @@ void UserInterface::CreateNewPet()
 			}
 			else if (userInput == "n")
 			{
-				Print("No");
 				break;
 			}
 			else
@@ -705,7 +743,6 @@ void UserInterface::CreateNewPet()
 	}
 	else
 	{
-		Print("GONE GONE");
 		std::ofstream saveFile("files/save_file.txt");
 		menuState = false;
 	}
@@ -716,7 +753,22 @@ void UserInterface::CreateNewPet()
 //shows the description of the program.
 void UserInterface::Description()
 {
-
+	std::string throwaway;
+	WaitAndRefresh(0);
+	Header();
+	ln();
+	nl();
+	nl();
+	Print("                                                  Made by Duncan Rendall :)");
+	Print("                     VirtualPet is a virtual pet! you can play feed and take care of your pet :)");
+	Print("                      Your virtual pet's stats will only be updated once you press the update key!");
+	Print("                      This would be the 'u' key");
+	Print("                                                        Enjoy the game!!!");
+	Print("                     Twitter: @RenDeveloper");
+	nl();
+	nl();
+	ln();
+	std::cin >> throwaway;
 }
 
 

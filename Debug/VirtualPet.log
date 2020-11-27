@@ -1,6 +1,3 @@
-﻿  CyberPet.cpp
-C:\Dev\cpp\_Unicpp\VirtualPet\VirtualPet\CyberPet.cpp(63,52): warning C4305: 'argument': truncation from 'double' to 'float'
-  UserInterface.cpp
-  Generating Code...
-C:\Dev\cpp\_Unicpp\VirtualPet\VirtualPet\UserInterface.cpp(434): warning C4715: 'UserInterface::ConfirmPet': not all control paths return a value
+﻿  UserInterface.cpp
+C:\Dev\cpp\_Unicpp\VirtualPet\VirtualPet\UserInterface.cpp(449): warning C4715: 'UserInterface::ConfirmPet': not all control paths return a value
   VirtualPet.vcxproj -> C:\Dev\cpp\_Unicpp\VirtualPet\Debug\VirtualPet.exe

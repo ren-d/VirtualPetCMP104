@@ -13,17 +13,17 @@ void ConvertAsciiFileToArray(std::string petArray[], std::string filename)
 
 }
 
-
+//prints the ascii art for the pet
 void PrintPet(std::string pet[10], bool removeName)
 {
-	if (removeName)
+	if (removeName)  //removes 'cat/dog/bird...' from the .txt file
 	{
 		for (int i = 1; i < 10; i++)
 		{
 			std::cout << pet[i] << std::endl;
 		}
 	}
-	else
+	else   //default print
 	{
 		for (int i = 0; i < 10; i++)
 		{

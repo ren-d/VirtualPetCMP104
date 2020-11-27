@@ -73,6 +73,8 @@ public:
 
 	void Feed();
 
+	void Die();
+
 	void Play();
 
 	void Sleep();

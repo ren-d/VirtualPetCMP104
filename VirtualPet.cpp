@@ -1,6 +1,7 @@
 #include "VirtualPet.h"
 #include "MiscFunctions.h"
 
+//Constructor instanciates variables and gets the ascii art from the files
 VirtualPet::VirtualPet()
 {
 	m_Name = "null";
@@ -21,10 +22,10 @@ VirtualPet::VirtualPet()
 
 }
 
+//creates save file for the pet
 int VirtualPet::SaveProgress()
 {
 	std::time_t end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	//creates save file for the pet
 	std::ofstream saveFile;
 	saveFile.open("files/save_file.txt");
 	saveFile << m_Name << std::endl;
@@ -38,7 +39,7 @@ int VirtualPet::SaveProgress()
 
 }
 
-
+//converts the integer type into a readable pet type
 void VirtualPet::SetType(int type)
 {
 
@@ -62,16 +63,14 @@ void VirtualPet::SetType(int type)
 	}
 }
 
+//gets the mean of the stats to generate a happiness level
 void VirtualPet::UpdateHapiness()
 {
 	m_Happiness = (m_Hunger + m_Energy + m_Playfulness) / 3;
 }
 
-void VirtualPet::SetName(std::string name)
-{
-	m_Name = name;
-}
 
+//getter functions to give access to member variables in other classes/functions
 float VirtualPet::GetHunger()
 {
 	return m_Hunger;
@@ -106,6 +105,11 @@ std::string VirtualPet::GetName()
 	return m_Name;
 }
 
+//setter functions to externally set member variables
+void VirtualPet::SetName(std::string name)
+{
+	m_Name = name;
+}
 
 void VirtualPet::SetHunger(float value)
 {
@@ -122,6 +126,15 @@ void VirtualPet::SetPlayfulness(float value)
 	m_Playfulness = value;
 }
 
+//destroys the save file of a dead pet
+void VirtualPet::Die()
+{
+	m_isAlive = false;
+	remove("files/save_file.txt");
+	
+
+}
+
 void VirtualPet::ReduceStatus(float Hunger, float Energy, float Playfulness)
 {
 	m_Hunger -= Hunger;
@@ -129,6 +142,8 @@ void VirtualPet::ReduceStatus(float Hunger, float Energy, float Playfulness)
 	m_Playfulness -= Playfulness;
 }
 
+
+//pet actions
 void VirtualPet::Feed()
 {
 	if (m_Hunger < 4.0)
@@ -162,11 +177,11 @@ void VirtualPet::Play()
 
 void VirtualPet::Sleep()
 {
-	if (m_Energy < 2.5)
+	if (m_Energy < 3.0)
 	{
 		m_Energy = 4.0f;
-		m_Hunger -= 2.0f;
-		m_Playfulness -= 3.0f;
+		m_Hunger -= 1.0f;
+		m_Playfulness -= 2.5f;
 		std::cout << m_Name << " went to the sleep" << std::endl;
 	}
 	else
