@@ -1,6 +1,7 @@
 #include "VirtualPet.h"
 #include "UserInterface.h"
 #include "MiscFunctions.h"
+
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 //All user Interface code
