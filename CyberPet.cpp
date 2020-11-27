@@ -29,9 +29,9 @@ int main()
 				std::thread thread(Update, std::ref(pet), ui);
 				ui.VirtualPetMain(pet);
 				thread.detach();
+				ui.LoadingScreen("Saving Progress", 500);
+				pet.SaveProgress();
 			}
-			ui.LoadingScreen("Saving Progress", 500);
-			pet.SaveProgress();
 			ui.menuState = true;
 			break;
 		case false:

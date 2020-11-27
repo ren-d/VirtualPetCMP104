@@ -366,7 +366,6 @@ std::string UserInterface::NameCreation()
 						std::fill_n(name, 9, '_');
 						break;
 					case 'y':
-						Print("Hell yeah");
 						WaitAndRefresh(400);
 						break;
 					default:
@@ -436,6 +435,7 @@ bool UserInterface::ConfirmPet(VirtualPet& pet)
 				return true;
 				break;
 			case 'n':
+				std::remove("files/save_file.txt");
 				return false;
 				break;
 			default:
