@@ -23,7 +23,7 @@ void PrintPet(std::string pet[10], bool removeName)
 			std::cout << pet[i] << std::endl;
 		}
 	}
-	else   //default print
+	else   //default print 
 	{
 		for (int i = 0; i < 10; i++)
 		{
